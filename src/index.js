@@ -32,14 +32,14 @@ async function run() {
       let fileHasError = false;
 
       if (basename.match(/^action.*/)) {
-        const parentDirectoryName = path.basename(path.dirname(file))
-        const filePath = actionsPath + '/' + parentDirectoryName + '/' + basename;
-        let fileType = 'action'
-        const steps = yamlContents['runs']['steps'];
+        const parentDirectoryName = path.basename(path.dirname(file));
+        filePath = actionsPath + '/' + parentDirectoryName + '/' + basename;
+        fileType = 'action'
+        steps = yamlContents['runs']['steps'];
       } else {
-        const filePath = workflowsPath + '/' + basename;
-        let fileType = 'workflow'
-        const jobs = yamlContents['jobs'];
+        filePath = workflowsPath + '/' + basename;
+        fileType = 'workflow'
+        jobs = yamlContents['jobs'];
       }
 
       if (jobs === undefined || steps === undefined) {
