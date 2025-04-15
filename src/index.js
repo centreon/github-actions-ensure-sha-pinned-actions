@@ -82,7 +82,7 @@ async function run() {
         }
       } else if (runs !== undefined) {
         for (const run in runs) {
-          const uses = run['uses'];
+          const uses = runs['uses'];
           const steps = runs['steps'];
           let jobHasError = false;
 
@@ -92,12 +92,12 @@ async function run() {
           let result = Object.entries(run);
 
           if (uses !== undefined) {
-            core.info('runAssertions check on uses');
+            core.info('runAssertions check on uses: ' + uses);
             jobHasError = runAssertions(uses, allowlist, isDryRun);
           } else if (steps !== undefined) {
             for (const step of steps) {
               if (!jobHasError) {
-                core.info('runAssertions check on steps');
+                core.info('runAssertions check on steps: ' + steps);
                 jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
               }
             }
