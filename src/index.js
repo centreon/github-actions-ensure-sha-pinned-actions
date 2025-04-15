@@ -29,7 +29,7 @@ async function run() {
       const basename = path.basename(file);
       const fileContents = fs.readFileSync(file, 'utf8');
       const yamlContents = yaml.parse(fileContents);
-      const jobs = yamlContents['jobs'];
+      //const jobs = yamlContents['jobs'];
       const runs = yamlContents['runs'];
       const pipeline = workflowsPath + '/' + basename
       let fileHasError = false;
@@ -39,10 +39,7 @@ async function run() {
       core.info('jobs = ' + jobs);
       core.info('runs = ' + runs);
       core.info('yamlContents');
-      console.log(yamlContents);
-      core.info('result');
-      let result = Object.entries(yamlContents);
-      console.log(result);
+      console.log(Object.entries(yamlContents));
 
       if (jobs === undefined && runs === undefined) {
         core.setFailed(`The "${pipeline}" workflow does not contain any step.`);
@@ -59,7 +56,7 @@ async function run() {
           core.info('uses = ' + uses);
           core.info('steps = ' + steps);
           core.info('job value');
-          let result = Object.entries(job);
+          console.log(Object.entries(job));
 
           if (uses !== undefined) {
             core.info('runAssertions check on uses');
@@ -89,7 +86,9 @@ async function run() {
           core.info('uses = ' + uses);
           core.info('steps = ' + steps);
           core.info('run value');
-          let result = Object.entries(run);
+          console.log(Object.entries(runs));
+          core.info('steps value');
+          console.log(Object.entries(steps));
 
           if (uses !== undefined) {
             core.info('runAssertions check on uses: ' + uses);
@@ -97,7 +96,11 @@ async function run() {
           } else if (steps !== undefined) {
             for (const step of steps) {
               if (!jobHasError) {
-                core.info('runAssertions check on steps: ' + steps);
+                core.info('steps value');
+                console.log(Object.entries(step));
+
+                core.info('runAssertions check on step');
+                core.info('step[\'uses\'] value' + step['uses']);
                 jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
               }
             }
