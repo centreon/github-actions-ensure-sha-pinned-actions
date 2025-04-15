@@ -33,17 +33,17 @@ async function run() {
 
       if (basename.match(/^action.*/)) {
         const parentDirectoryName = path.basename(path.dirname(file))
-        let filePath = actionsPath + '/' + parentDirectoryName + '/' + basename;
+        const filePath = actionsPath + '/' + parentDirectoryName + '/' + basename;
         let fileType = 'action'
         const steps = yamlContents['runs']['steps'];
       } else {
-        let filePath = workflowsPath + '/' + basename;
+        const filePath = workflowsPath + '/' + basename;
         let fileType = 'workflow'
         const jobs = yamlContents['jobs'];
       }
 
-      if (jobs === undefined) {
-        core.setFailed(`The "${filePath}" file does not contain any step.`);
+      if (jobs === undefined || steps === undefined) {
+        core.setFailed(`The "${filePath}" file does not contain any element on which to iterate.`);
       }
 
       core.startGroup(filePath);
