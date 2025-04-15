@@ -40,6 +40,7 @@ async function run() {
         fileType = 'action';
         steps = yamlContents['runs']['steps'];
       } else {
+        console.log("uwu");
         filePath = workflowsPath + '/' + basename;
         fileType = 'workflow';
         jobs = yamlContents['jobs'];
