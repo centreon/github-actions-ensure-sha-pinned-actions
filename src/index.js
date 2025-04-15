@@ -13,7 +13,7 @@ async function run() {
     const isDryRun = core.getInput('dry_run') === 'true';
     const workflowsPath = process.env['ZG_WORKFLOWS_PATH'] || '.github/workflows';
     const actionsPath = '.github/actions';
-    const globber = await glob.create([workflowsPath + '/*.yaml', workflowsPath + '/*.yml', actionsPath + '/*.yaml', actionsPath + '/*.yml'].join('\n'));
+    const globber = await glob.create([workflowsPath + '/*.yaml', workflowsPath + '/*.yml', actionsPath + '/**/*.yaml', actionsPath + '/**/*.yml'].join('\n'));
     let actionHasError = false;
 
     for await (const file of globber.globGenerator()) {
@@ -43,7 +43,7 @@ async function run() {
             }
           }
         } else {
-          core.warning(`The "${job}" job of the "${basename}" workflow does not contain uses or steps.`);  
+          core.warning(`The "${job}" job of the "${basename}" workflow does not contain uses or steps.`);
         }
 
         if (jobHasError) {
