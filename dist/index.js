@@ -38648,25 +38648,42 @@ async function run() {
       const basename = path.basename(file);
       const fileContents = fs.readFileSync(file, 'utf8');
       const yamlContents = yaml.parse(fileContents);
-      const jobs = yamlContents['jobs'];
+
+      console.log("1");
       let fileHasError = false;
+      let filePath;
+      let fileType;
+      let steps;
+      let jobs;
 
-      if (jobs === undefined) {
-        core.setFailed(`The "${basename}" workflow does not contain jobs.`);
-      }
-
+      console.log("2");
       if (basename.match(/^action.*/)) {
-        const parentDirectoryName = path.basename(path.dirname(file))
-        let filePath = actionsPath + '/' + parentDirectoryName + '/' + basename;
+        const parentDirectoryName = path.basename(path.dirname(file));
+        filePath = actionsPath + '/' + parentDirectoryName + '/' + basename;
+        fileType = 'action';
+        steps = yamlContents['runs']['steps'];
       } else {
-        let filePath = workflowsPath + '/' + basename;
+        filePath = workflowsPath + '/' + basename;
+        fileType = 'workflow';
+        jobs = yamlContents['jobs'];
       }
 
+      console.log("3");
+      if (jobs === undefined || steps === undefined) {
+        core.setFailed(`The "${filePath}" file does not contain any element on which to iterate.`);
+      }
+
+      console.log("4");
       core.startGroup(filePath);
 
       for (const job in jobs) {
-        const uses = jobs[job]['uses'];
-        const steps = jobs[job]['steps'];
+        if (fileType == 'workflow') {
+          steps = jobs[job]['steps'];
+          uses = jobs[job]['uses'];
+        }
+
+        console.log('Steps of file ', filePath, ' :', steps);
+
         let jobHasError = false;
 
         if (uses !== undefined) {
@@ -38678,7 +38695,7 @@ async function run() {
             }
           }
         } else {
-          core.warning(`The "${job}" job of the "${basename}" workflow does not contain uses or steps.`);
+          core.warning(`The "${job}" job of the "${filePath}" file does not contain uses or steps.`);
         }
 
         if (jobHasError) {
