@@ -29,25 +29,33 @@ async function run() {
       const basename = path.basename(file);
       const fileContents = fs.readFileSync(file, 'utf8');
       const yamlContents = yaml.parse(fileContents);
-      const jobs = yamlContents['jobs'];
       let fileHasError = false;
-
-      if (jobs === undefined) {
-        core.setFailed(`The "${basename}" workflow does not contain jobs.`);
-      }
 
       if (basename.match(/^action.*/)) {
         const parentDirectoryName = path.basename(path.dirname(file))
         let filePath = actionsPath + '/' + parentDirectoryName + '/' + basename;
+        let fileType = 'action'
+        const steps = yamlContents['runs']['steps'];
       } else {
         let filePath = workflowsPath + '/' + basename;
+        let fileType = 'workflow'
+        const jobs = yamlContents['jobs'];
+      }
+
+      if (jobs === undefined) {
+        core.setFailed(`The "${filePath}" file does not contain any step.`);
       }
 
       core.startGroup(filePath);
 
       for (const job in jobs) {
-        const uses = jobs[job]['uses'];
-        const steps = jobs[job]['steps'];
+        if (filetype == 'workflow') {
+          const steps = jobs[job]['steps'];
+          const uses = jobs[job]['uses'];
+        }
+
+        console.log('Steps of file ', filePath, ' :', steps);
+
         let jobHasError = false;
 
         if (uses !== undefined) {
@@ -59,7 +67,7 @@ async function run() {
             }
           }
         } else {
-          core.warning(`The "${job}" job of the "${basename}" workflow does not contain uses or steps.`);
+          core.warning(`The "${job}" job of the "${filePath}" file does not contain uses or steps.`);
         }
 
         if (jobHasError) {
