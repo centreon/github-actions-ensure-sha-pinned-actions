@@ -38652,7 +38652,7 @@ async function run() {
       let fileHasError = false;
 
       if (jobs === undefined) {
-        core.setFailed(`The "${basename}" workflow does not contain jobs.`);
+        core.setFailed(`The "${file}" workflow does not contain jobs.`);
       }
 
       core.startGroup(workflowsPath + '/' + basename);
@@ -38671,7 +38671,7 @@ async function run() {
             }
           }
         } else {
-          core.warning(`The "${job}" job of the "${basename}" workflow does not contain uses or steps.`);
+          core.warning(`The "${job}" job of the "${file}" workflow does not contain uses or steps.`);
         }
 
         if (jobHasError) {
