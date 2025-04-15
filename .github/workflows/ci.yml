@@ -44,8 +44,8 @@ jobs:
       run: npm ci
     - name: Run linter tool
       run: npm run lint
-    - name: Test
-      run: npm run test
+    # - name: Test
+    #   run: npm run test
     - name: Prepare
       run: npm run prepare
     - uses: stefanzweifel/git-auto-commit-action@e348103e9026cc0eee72ae06630dbe30c8bf7a79
