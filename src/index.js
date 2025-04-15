@@ -29,6 +29,7 @@ async function run() {
       const basename = path.basename(file);
       const fileContents = fs.readFileSync(file, 'utf8');
       const yamlContents = yaml.parse(fileContents);
+
       let fileHasError = false;
       let filePath;
       let fileType;
@@ -36,11 +37,11 @@ async function run() {
       if (basename.match(/^action.*/)) {
         const parentDirectoryName = path.basename(path.dirname(file));
         filePath = actionsPath + '/' + parentDirectoryName + '/' + basename;
-        fileType = 'action'
+        fileType = 'action';
         steps = yamlContents['runs']['steps'];
       } else {
         filePath = workflowsPath + '/' + basename;
-        fileType = 'workflow'
+        fileType = 'workflow';
         jobs = yamlContents['jobs'];
       }
 
