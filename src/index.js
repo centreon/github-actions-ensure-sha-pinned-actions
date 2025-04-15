@@ -12,7 +12,8 @@ async function run() {
     const allowlist = core.getInput('allowlist');
     const isDryRun = core.getInput('dry_run') === 'true';
     const workflowsPath = process.env['ZG_WORKFLOWS_PATH'] || '.github/workflows';
-    const globber = await glob.create([workflowsPath + '/*.yaml', workflowsPath + '/*.yml'].join('\n'));
+    const actionsPath = '.github/actions';
+    const globber = await glob.create([workflowsPath + '/*.yaml', workflowsPath + '/*.yml', actionsPath + '/*.yaml', actionsPath + '/*.yml'].join('\n'));
     let actionHasError = false;
 
     for await (const file of globber.globGenerator()) {
