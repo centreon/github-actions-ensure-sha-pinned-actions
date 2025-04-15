@@ -38653,13 +38653,6 @@ async function run() {
       const pipeline = workflowsPath + '/' + basename
       let fileHasError = false;
 
-      core.info('pipeline = ' + pipeline);
-      core.info('basename = ' + basename);
-      core.info('jobs = ' + jobs);
-      core.info('runs = ' + runs);
-      core.info('yamlContents');
-      console.log(Object.entries(yamlContents));
-
       if (jobs === undefined && runs === undefined) {
         core.setFailed(`The "${pipeline}" workflow does not contain any step.`);
       }
@@ -38689,6 +38682,13 @@ async function run() {
           }
         }
       } else if (runs !== undefined) {
+
+        core.info('pipeline = ' + pipeline);
+        core.info('jobs = ' + jobs);
+        core.info('runs = ' + runs);
+        core.info('yamlContents');
+        console.log(Object.entries(yamlContents));
+
         for (const run in runs) {
           const uses = runs['uses'];
           const steps = runs['steps'];
