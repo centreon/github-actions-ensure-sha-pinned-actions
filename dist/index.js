@@ -38701,8 +38701,8 @@ async function run() {
         }
       } else if (runs !== undefined) {
         for (const run in runs) {
-          const uses = runs[run]['uses'];
-          const steps = runs[run]['steps'];
+          const uses = run['uses'];
+          const steps = runs['steps'];
           let jobHasError = false;
 
           core.info('uses = ' + uses);
