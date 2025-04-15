@@ -38640,7 +38640,7 @@ async function run() {
     ].join('\n'))
     let actionHasError = false;
 
-    // Debug globber
+    // info globber
     const matchedFiles = await globber.glob();
     console.log('Matched Files:', matchedFiles);
 
@@ -38650,7 +38650,10 @@ async function run() {
       const yamlContents = yaml.parse(fileContents);
       const steps = yamlContents['steps'];
       let fileHasError = false;
-      core.debug('basename = ' + basename);
+      core.info('file = ' + file);
+      core.info('basename = ' + basename);
+      core.info('yamlContents = ' + yamlContents);
+      core.info('steps = ' + steps);
 
       if (steps === undefined) {
         core.setFailed(`The "${file}" pipeline does not contain any step.`);
@@ -38659,12 +38662,12 @@ async function run() {
       core.startGroup(workflowsPath + '/' + basename);
 
       for (const step in steps) {
-        core.debug('step = ' + step);
+        core.info('step = ' + step);
         const uses = steps[step]['uses'];
         let jobHasError = false;
 
         if (uses !== undefined) {
-          core.debug('runAssertions checks');
+          core.info('runAssertions checks');
           jobHasError = runAssertions(uses, allowlist, isDryRun);
         } else {
           core.warning(`The "${step}" steps of the "${file}" workflow does not contain uses.`);
