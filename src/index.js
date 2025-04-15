@@ -31,8 +31,6 @@ async function run() {
       const yamlContents = yaml.parse(fileContents);
 
       let fileHasError = false;
-      let filePath;
-      let fileType;
 
       if (basename.match(/^action.*/)) {
         const parentDirectoryName = path.basename(path.dirname(file));
@@ -40,7 +38,6 @@ async function run() {
         fileType = 'action';
         steps = yamlContents['runs']['steps'];
       } else {
-        console.log("uwu");
         filePath = workflowsPath + '/' + basename;
         fileType = 'workflow';
         jobs = yamlContents['jobs'];
