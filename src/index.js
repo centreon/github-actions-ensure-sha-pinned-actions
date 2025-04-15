@@ -31,6 +31,10 @@ async function run() {
       const yamlContents = yaml.parse(fileContents);
 
       let fileHasError = false;
+      let filePath;
+      let fileType;
+      let steps;
+      let jobs;
 
       console.log(basename);
       if (basename.match(/^action.*/)) {
@@ -51,9 +55,9 @@ async function run() {
       core.startGroup(filePath);
 
       for (const job in jobs) {
-        if (filetype == 'workflow') {
-          const steps = jobs[job]['steps'];
-          const uses = jobs[job]['uses'];
+        if (fileType == 'workflow') {
+          steps = jobs[job]['steps'];
+          uses = jobs[job]['uses'];
         }
 
         console.log('Steps of file ', filePath, ' :', steps);
