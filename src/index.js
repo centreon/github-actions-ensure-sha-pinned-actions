@@ -34,7 +34,7 @@ async function run() {
       const pipeline = workflowsPath + '/' + basename
 
       if (jobs === undefined) {
-        core.setFailed(`The "${file}" workflow does not contain jobs.`);
+        core.setFailed(`The "${pipeline}" workflow does not contain jobs.`);
       }
 
       core.startGroup(workflowsPath + '/' + basename);
