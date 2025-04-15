@@ -62,7 +62,7 @@ async function run() {
       }
 
       if (!fileHasError) {
-        core.info('No issues were found!')
+        core.info('No issues were found.')
       }
 
       core.endGroup();
