@@ -38655,7 +38655,11 @@ async function run() {
 
       core.info('pipeline = ' + pipeline);
       core.info('basename = ' + basename);
+      core.info('jobs = ' + jobs);
+      core.info('runs = ' + runs);
+      core.info('yamlContents');
       console.log(yamlContents);
+      core.info('result');
       let result = Object.entries(yamlContents);
       console.log(result);
 
@@ -38671,6 +38675,11 @@ async function run() {
           const steps = jobs[job]['steps'];
           let jobHasError = false;
 
+          core.info('uses = ' + uses);
+          core.info('steps = ' + steps);
+          core.info('job value');
+          let result = Object.entries(job);
+
           if (uses !== undefined) {
             core.info('runAssertions check on uses');
             jobHasError = runAssertions(uses, allowlist, isDryRun);
@@ -38682,7 +38691,7 @@ async function run() {
               }
             }
           } else {
-            core.warning(`The "${job}" job of the "${basename}" workflow does not contain uses or steps.`);
+            core.warning(`The "${job}" job of the "${pipeline}" workflow does not contain uses or steps.`);
           }
 
           if (jobHasError) {
@@ -38696,6 +38705,11 @@ async function run() {
           const steps = runs[run]['steps'];
           let jobHasError = false;
 
+          core.info('uses = ' + uses);
+          core.info('steps = ' + steps);
+          core.info('run value');
+          let result = Object.entries(run);
+
           if (uses !== undefined) {
             core.info('runAssertions check on uses');
             jobHasError = runAssertions(uses, allowlist, isDryRun);
@@ -38707,7 +38721,7 @@ async function run() {
               }
             }
           } else {
-            core.warning(`The "${job}" job of the "${basename}" workflow does not contain uses or steps.`);
+            core.warning(`The "${run}" runs of the "${pipeline}" workflow does not contain uses or steps.`);
           }
 
           if (jobHasError) {
