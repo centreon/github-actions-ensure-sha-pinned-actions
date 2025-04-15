@@ -38648,7 +38648,8 @@ async function run() {
       const basename = path.basename(file);
       const fileContents = fs.readFileSync(file, 'utf8');
       const yamlContents = yaml.parse(fileContents);
-      const steps = yamlContents['steps'];
+      const jobs = yamlContents['jobs'];
+      const runs = yamlContents['runs'];
       const pipeline = workflowsPath + '/' + basename
       let fileHasError = false;
 
@@ -38658,22 +38659,31 @@ async function run() {
       var result = Object.keys(yamlContents).map((key) => [key, yamlContents[key]]);
       console.log(result);
 
-      if (steps === undefined) {
+      if (jobs === undefined && uses === undefined) {
         core.setFailed(`The "${pipeline}" workflow does not contain any step.`);
       }
 
       core.startGroup(pipeline);
 
-      for (const step in steps) {
-        core.info('step = ' + step);
-        const uses = steps[step]['uses'];
+      let results = jobs.concat(runs)
+
+      for (const result in results) {
+        const uses = results[result]['uses'];
+        const steps = results[result]['steps'];
         let jobHasError = false;
 
         if (uses !== undefined) {
-          core.info('runAssertions checks');
+          core.info('runAssertions check on uses');
           jobHasError = runAssertions(uses, allowlist, isDryRun);
+        } else if (steps !== undefined) {
+          for (const step of steps) {
+            if (!jobHasError) {
+              core.info('runAssertions check on steps');
+              jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
+            }
+          }
         } else {
-          core.warning(`The "${step}" steps of the "${pipeline}" workflow does not contain uses.`);
+          core.warning(`The "${job}" job of the "${basename}" workflow does not contain uses or steps.`);
         }
 
         if (jobHasError) {
