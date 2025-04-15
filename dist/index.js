@@ -38656,6 +38656,12 @@ async function run() {
       core.info('steps = ' + steps);
       core.info('workflowsPath = ' + workflowsPath);
 
+      yamlContents.forEach(function(item, index, arr) {
+        core.info('item = ' + item);
+        core.info('index = ' + index);
+        core.info('arr = ' + arr);
+      });
+
       if (steps === undefined) {
         core.setFailed(`The "${file}" pipeline does not contain any step.`);
       }
