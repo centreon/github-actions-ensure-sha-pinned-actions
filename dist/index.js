@@ -38656,20 +38656,22 @@ async function run() {
       core.info('pipeline = ' + pipeline);
       core.info('basename = ' + basename);
       console.log(yamlContents);
-      var result = Object.keys(yamlContents).map((key) => [key, yamlContents[key]]);
+      let result = Object.entries(yamlContents);
       console.log(result);
 
-      if (jobs === undefined && uses === undefined) {
+      if (jobs === undefined && runs === undefined) {
         core.setFailed(`The "${pipeline}" workflow does not contain any step.`);
       }
 
       core.startGroup(pipeline);
 
-      let results = jobs.concat(runs)
+      let triggers = [...jobs, ...runs];
+      let result2 = Object.entries(triggers);
+      console.log(result);
 
-      for (const result in results) {
-        const uses = results[result]['uses'];
-        const steps = results[result]['steps'];
+      for (const trigger in triggers) {
+        const uses = triggers[trigger]['uses'];
+        const steps = triggers[trigger]['steps'];
         let jobHasError = false;
 
         if (uses !== undefined) {
