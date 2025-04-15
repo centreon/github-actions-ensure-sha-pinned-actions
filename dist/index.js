@@ -38665,32 +38665,55 @@ async function run() {
 
       core.startGroup(pipeline);
 
-      let triggers = [...jobs, ...runs];
-      let result2 = Object.entries(triggers);
-      console.log(result);
+      if (jobs !== undefined) {
+        for (const job in jobs) {
+          const uses = jobs[job]['uses'];
+          const steps = jobs[job]['steps'];
+          let jobHasError = false;
 
-      for (const trigger in triggers) {
-        const uses = triggers[trigger]['uses'];
-        const steps = triggers[trigger]['steps'];
-        let jobHasError = false;
-
-        if (uses !== undefined) {
-          core.info('runAssertions check on uses');
-          jobHasError = runAssertions(uses, allowlist, isDryRun);
-        } else if (steps !== undefined) {
-          for (const step of steps) {
-            if (!jobHasError) {
-              core.info('runAssertions check on steps');
-              jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
+          if (uses !== undefined) {
+            core.info('runAssertions check on uses');
+            jobHasError = runAssertions(uses, allowlist, isDryRun);
+          } else if (steps !== undefined) {
+            for (const step of steps) {
+              if (!jobHasError) {
+                core.info('runAssertions check on steps');
+                jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
+              }
             }
+          } else {
+            core.warning(`The "${job}" job of the "${basename}" workflow does not contain uses or steps.`);
           }
-        } else {
-          core.warning(`The "${job}" job of the "${basename}" workflow does not contain uses or steps.`);
-        }
 
-        if (jobHasError) {
-          actionHasError = true;
-          fileHasError = true;
+          if (jobHasError) {
+            actionHasError = true;
+            fileHasError = true;
+          }
+        }
+      } else if (runs !== undefined) {
+        for (const run in runs) {
+          const uses = runs[run]['uses'];
+          const steps = runs[run]['steps'];
+          let jobHasError = false;
+
+          if (uses !== undefined) {
+            core.info('runAssertions check on uses');
+            jobHasError = runAssertions(uses, allowlist, isDryRun);
+          } else if (steps !== undefined) {
+            for (const step of steps) {
+              if (!jobHasError) {
+                core.info('runAssertions check on steps');
+                jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
+              }
+            }
+          } else {
+            core.warning(`The "${job}" job of the "${basename}" workflow does not contain uses or steps.`);
+          }
+
+          if (jobHasError) {
+            actionHasError = true;
+            fileHasError = true;
+          }
         }
       }
 
