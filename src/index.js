@@ -36,7 +36,6 @@ async function run() {
       let steps;
       let jobs;
 
-      console.log(basename);
       if (basename.match(/^action.*/)) {
         const parentDirectoryName = path.basename(path.dirname(file));
         filePath = actionsPath + '/' + parentDirectoryName + '/' + basename;
