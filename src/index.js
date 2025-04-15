@@ -53,7 +53,7 @@ async function run() {
             }
           }
         } else {
-          core.warning(`The "${job}" job of the "${file}" workflow does not contain uses or steps.`);
+          core.warning(`The "${pipeline}" job of the "${file}" workflow does not contain uses or steps.`);
         }
 
         if (jobHasError) {
