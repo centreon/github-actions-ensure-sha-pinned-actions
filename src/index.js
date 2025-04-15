@@ -31,9 +31,10 @@ async function run() {
       const yamlContents = yaml.parse(fileContents);
       const jobs = yamlContents['jobs'];
       let fileHasError = false;
+      const pipeline = workflowsPath + '/' + basename
 
       if (jobs === undefined) {
-        core.setFailed(`The "${basename}" workflow does not contain jobs.`);
+        core.setFailed(`The "${pipeline}" workflow does not contain jobs.`);
       }
 
       core.startGroup(workflowsPath + '/' + basename);
@@ -52,7 +53,7 @@ async function run() {
             }
           }
         } else {
-          core.warning(`The "${job}" job of the "${basename}" workflow does not contain uses or steps.`);
+          core.warning(`The "${pipeline}" job of the "${file}" workflow does not contain uses or steps.`);
         }
 
         if (jobHasError) {
