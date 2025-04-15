@@ -30,6 +30,8 @@ async function run() {
       const fileContents = fs.readFileSync(file, 'utf8');
       const yamlContents = yaml.parse(fileContents);
       let fileHasError = false;
+      let filePath;
+      let fileType;
 
       if (basename.match(/^action.*/)) {
         const parentDirectoryName = path.basename(path.dirname(file));
