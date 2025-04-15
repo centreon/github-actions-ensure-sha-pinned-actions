@@ -38655,7 +38655,7 @@ async function run() {
 
       core.info('pipeline = ' + pipeline);
       core.info('basename = ' + basename);
-      core.info('jobs = ' + jobs);
+      //core.info('jobs = ' + jobs);
       core.info('runs = ' + runs);
       core.info('yamlContents');
       console.log(Object.entries(yamlContents));
