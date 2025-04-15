@@ -30,12 +30,14 @@ async function run() {
       const fileContents = fs.readFileSync(file, 'utf8');
       const yamlContents = yaml.parse(fileContents);
 
+      console.log("1");
       let fileHasError = false;
       let filePath;
       let fileType;
       let steps;
       let jobs;
 
+      console.log("2");
       if (basename.match(/^action.*/)) {
         const parentDirectoryName = path.basename(path.dirname(file));
         filePath = actionsPath + '/' + parentDirectoryName + '/' + basename;
@@ -47,6 +49,12 @@ async function run() {
         jobs = yamlContents['jobs'];
       }
 
+      console.log("3");
+      if (jobs === undefined || steps === undefined) {
+        core.setFailed(`The "${filePath}" file does not contain any element on which to iterate.`);
+      }
+
+      console.log("4");
       core.startGroup(filePath);
 
       for (const job in jobs) {
