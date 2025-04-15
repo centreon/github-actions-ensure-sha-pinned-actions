@@ -38635,14 +38635,14 @@ async function run() {
     const globber = await glob.create([
       `${workflowsPath}/*.yaml`,
       `${workflowsPath}/*.yml`,
-      `${actionsPath}/**/*.yaml`,
-      `${actionsPath}/**/*.yml`
+      `${actionsPath}/**/action.yaml`,
+      `${actionsPath}/**/action.yml`
     ].join('\n'))
     let actionHasError = false;
 
     // Debug globber
     const matchedFiles = await globber.glob();
-    console.log('Matched Files:', matchedFiles);
+    console.log('Matched files:', matchedFiles);
 
     for await (const file of globber.globGenerator()) {
       const basename = path.basename(file);
@@ -38655,7 +38655,14 @@ async function run() {
         core.setFailed(`The "${basename}" workflow does not contain jobs.`);
       }
 
-      core.startGroup(workflowsPath + '/' + basename);
+      if (basename.match(/^action.*/)) {
+        const parentDirectoryName = path.basename(path.dirname(file))
+        let filePath = actionsPath + '/' + parentDirectoryName + '/' + basename;
+      } else {
+        let filePath = workflowsPath + '/' + basename;
+      }
+
+      core.startGroup(filePath);
 
       for (const job in jobs) {
         const uses = jobs[job]['uses'];
