@@ -38649,20 +38649,20 @@ async function run() {
       const fileContents = fs.readFileSync(file, 'utf8');
       const yamlContents = yaml.parse(fileContents);
       const steps = yamlContents['steps'];
+      const pipeline = workflowsPath + '/' + basename
       let fileHasError = false;
-      core.info('file = ' + file);
-      core.info('basename = ' + basename);
-      core.info('yamlContents = ' + yamlContents);
-      core.info('steps = ' + steps);
-      core.info('workflowsPath = ' + workflowsPath);
 
-      console.log("yamlContents = " + yamlContents);
+      core.info('pipeline = ' + pipeline);
+      core.info('basename = ' + basename);
+      console.log(yamlContents);
+      var result = Object.keys(yamlContents).map((key) => [key, yamlContents[key]]);
+      console.log(result);
 
       if (steps === undefined) {
-        core.setFailed(`The "${file}" pipeline does not contain any step.`);
+        core.setFailed(`The "${pipeline}" workflow does not contain any step.`);
       }
 
-      core.startGroup(workflowsPath + '/' + basename);
+      core.startGroup(pipeline);
 
       for (const step in steps) {
         core.info('step = ' + step);
@@ -38673,7 +38673,7 @@ async function run() {
           core.info('runAssertions checks');
           jobHasError = runAssertions(uses, allowlist, isDryRun);
         } else {
-          core.warning(`The "${step}" steps of the "${file}" workflow does not contain uses.`);
+          core.warning(`The "${step}" steps of the "${pipeline}" workflow does not contain uses.`);
         }
 
         if (jobHasError) {
