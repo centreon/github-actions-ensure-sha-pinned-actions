@@ -38648,14 +38648,14 @@ async function run() {
       const basename = path.basename(file);
       const fileContents = fs.readFileSync(file, 'utf8');
       const yamlContents = yaml.parse(fileContents);
-      //const jobs = yamlContents['jobs'];
+      const jobs = yamlContents['jobs'];
       const runs = yamlContents['runs'];
       const pipeline = workflowsPath + '/' + basename
       let fileHasError = false;
 
       core.info('pipeline = ' + pipeline);
       core.info('basename = ' + basename);
-      //core.info('jobs = ' + jobs);
+      core.info('jobs = ' + jobs);
       core.info('runs = ' + runs);
       core.info('yamlContents');
       console.log(Object.entries(yamlContents));
@@ -38671,19 +38671,11 @@ async function run() {
           const uses = jobs[job]['uses'];
           const steps = jobs[job]['steps'];
           let jobHasError = false;
-
-          core.info('uses = ' + uses);
-          core.info('steps = ' + steps);
-          core.info('job value');
-          console.log(Object.entries(job));
-
           if (uses !== undefined) {
-            core.info('runAssertions check on uses');
             jobHasError = runAssertions(uses, allowlist, isDryRun);
           } else if (steps !== undefined) {
             for (const step of steps) {
               if (!jobHasError) {
-                core.info('runAssertions check on steps');
                 jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
               }
             }
