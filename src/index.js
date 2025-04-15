@@ -31,7 +31,7 @@ async function run() {
       const yamlContents = yaml.parse(fileContents);
       const jobs = yamlContents['jobs'];
       let fileHasError = false;
-
+      const pipeline = workflowsPath + '/' + basename
       if (jobs === undefined) {
         core.setFailed(`The "${file}" workflow does not contain jobs.`);
       }
