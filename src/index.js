@@ -79,6 +79,11 @@ async function run() {
               jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
             }
           }
+<<<<<<< HEAD
+=======
+        } else {
+          core.warning(`The "${pipeline}" job of the "${file}" workflow does not contain uses or steps.`);
+>>>>>>> c21779db7ac229a673aaa4a59f63b07d1ad66783
         }
 
         if (jobHasError) {
