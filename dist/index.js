@@ -38662,7 +38662,7 @@ async function run() {
         jobs = yamlContents['jobs'];
       }
 
-      if (jobs === undefined && steps === undefined) {
+      if (jobs === undefined && runs === undefined) {
         core.setFailed(`The "${filePath}" file does not contain any element on which to iterate.`);
       }
 
@@ -38689,7 +38689,7 @@ async function run() {
             fileHasError = true;
           }
         }
-      } else if (runs !== undefined) {
+      } else if (steps !== undefined) {
         console.log(steps);
         let jobHasError = false;
         if (steps !== undefined) {
