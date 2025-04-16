@@ -38640,7 +38640,6 @@ async function run() {
     ].join('\n'))
     let actionHasError = false;
 
-    // Debug globber
     const matchedFiles = await globber.glob();
     console.log('Matched files:', matchedFiles);
 
@@ -38669,49 +38668,49 @@ async function run() {
         } else {
           core.error(`The "${filePath}" file does not seem to be a proper .github file.`);
         }
-      }
-
-      core.startGroup(filePath);
-      let jobHasError = false;
-      if (jobs !== undefined) {
-        for (const job in jobs) {
-          steps = jobs[job]['steps'];
-          uses = jobs[job]['uses'];
-          if (uses !== undefined) {
-            jobHasError = runAssertions(uses, allowlist, isDryRun);
-          } else if (steps !== undefined) {
-            for (const step of steps) {
-              if (!jobHasError) {
-                jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
+      } else {
+        core.startGroup(filePath);
+        let jobHasError = false;
+        if (jobs !== undefined) {
+          for (const job in jobs) {
+            steps = jobs[job]['steps'];
+            uses = jobs[job]['uses'];
+            if (uses !== undefined) {
+              jobHasError = runAssertions(uses, allowlist, isDryRun);
+            } else if (steps !== undefined) {
+              for (const step of steps) {
+                if (!jobHasError) {
+                  jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
+                }
               }
+            } else {
+              core.warning(`The "${job}" job of the "${filePath}" file does not contain uses or steps.`);
             }
-          } else {
-            core.warning(`The "${job}" job of the "${filePath}" file does not contain uses or steps.`);
-          }
 
-          if (jobHasError) {
-            actionHasError = true;
-            fileHasError = true;
+            if (jobHasError) {
+              actionHasError = true;
+              fileHasError = true;
+            }
           }
-        }
-      } else if (steps !== undefined) {
-        for (const step of steps) {
-          if (!jobHasError) {
-            jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
+        } else if (steps !== undefined) {
+          for (const step of steps) {
+            if (!jobHasError) {
+              jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
+            }
           }
         }
-      }
 
-      if (jobHasError) {
-        actionHasError = true;
-        fileHasError = true;
-      }
+        if (jobHasError) {
+          actionHasError = true;
+          fileHasError = true;
+        }
 
-      if (!fileHasError) {
-        core.info('No issues were found.')
-      }
+        if (!fileHasError) {
+          core.info('No issues were found.')
+        }
 
-      core.endGroup();
+        core.endGroup();
+      }
     }
 
     if (!isDryRun && actionHasError) {
