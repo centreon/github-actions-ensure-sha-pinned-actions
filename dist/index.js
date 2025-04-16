@@ -38656,13 +38656,13 @@ async function run() {
 
       if (basename.match(/^action..*/)) {
         filePath = actionsPath + '/' + path.basename(path.dirname(file)) + '/' + basename;
-        steps = yamlContents.runs.steps;
+        steps = yamlContents['runs']?.['steps'];
       } else {
         filePath = workflowsPath + '/' + basename;
         jobs = yamlContents['jobs'];
       }
 
-      if (jobs === undefined && runs === undefined) {
+      if (jobs === undefined && steps === undefined) {
         core.setFailed(`The "${filePath}" file does not contain any element on which to iterate.`);
       }
 

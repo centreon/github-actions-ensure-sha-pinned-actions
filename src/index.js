@@ -37,7 +37,7 @@ async function run() {
 
       if (basename.match(/^action..*/)) {
         filePath = actionsPath + '/' + path.basename(path.dirname(file)) + '/' + basename;
-        steps = yamlContents.runs.steps;
+        steps = yamlContents['runs']?.['steps'];
       } else {
         filePath = workflowsPath + '/' + basename;
         jobs = yamlContents['jobs'];
@@ -70,7 +70,7 @@ async function run() {
             fileHasError = true;
           }
         }
-      } else if (runs !== undefined) {
+      } else if (steps !== undefined) {
         console.log(steps);
         let jobHasError = false;
         if (steps !== undefined) {
