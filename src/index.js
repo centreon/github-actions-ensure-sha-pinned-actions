@@ -38,13 +38,17 @@ async function run() {
       if (basename.match(/^action..*/)) {
         filePath = actionsPath + '/' + path.basename(path.dirname(file)) + '/' + basename;
         steps = yamlContents['runs']?.['steps'];
+        hasMain = yamlContents['runs']?.['main'];
       } else {
         filePath = workflowsPath + '/' + basename;
         jobs = yamlContents['jobs'];
       }
 
       if (jobs === undefined && steps === undefined) {
-        core.setFailed(`The "${filePath}" file does not contain any element on which to iterate.`);
+        if (hasMain !== undefined) {
+          console.log(`The "${filePath}" directly runs a js script and therefore does not need to be scanned.`)
+        }
+        core.error(`The "${filePath}" file does not seem to be a proper .github file.`);
       }
 
       core.startGroup(filePath);
@@ -71,22 +75,17 @@ async function run() {
           }
         }
       } else if (steps !== undefined) {
-        console.log(steps);
         let jobHasError = false;
-        if (steps !== undefined) {
-          for (const step of steps) {
-            if (!jobHasError) {
-              jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
-            }
+        for (const step of steps) {
+          if (!jobHasError) {
+            jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
           }
-        } else {
-          core.warning(`The "${run}" run of the "${filePath}" file does not contain uses or steps.`);
         }
+      }
 
-        if (jobHasError) {
-          actionHasError = true;
-          fileHasError = true;
-        }
+      if (jobHasError) {
+        actionHasError = true;
+        fileHasError = true;
       }
 
       if (!fileHasError) {
