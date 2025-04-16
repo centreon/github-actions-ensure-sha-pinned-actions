@@ -73,6 +73,7 @@ async function run() {
       } else if (runs !== undefined) {
         for (const run in runs) {
           steps = runs[run]['steps'];
+          console.log(steps);
           uses = runs[run]['uses'];
           let jobHasError = false;
           if (uses !== undefined) {
