@@ -17,7 +17,6 @@ jobs:
 
   build_test:
     name: Build & Test
-    needs: security_hardening
     runs-on: ubuntu-latest
     steps:
     - name: Clone the repository
