@@ -52,11 +52,11 @@ async function run() {
       }
 
       core.startGroup(filePath);
+      let jobHasError = false;
       if (jobs !== undefined) {
         for (const job in jobs) {
           steps = jobs[job]['steps'];
           uses = jobs[job]['uses'];
-          let jobHasError = false;
           if (uses !== undefined) {
             jobHasError = runAssertions(uses, allowlist, isDryRun);
           } else if (steps !== undefined) {
@@ -75,7 +75,6 @@ async function run() {
           }
         }
       } else if (steps !== undefined) {
-        let jobHasError = false;
         for (const step of steps) {
           if (!jobHasError) {
             jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
