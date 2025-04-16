@@ -38654,7 +38654,7 @@ async function run() {
       let steps;
       let jobs;
 
-      if (basename.match(/^action..*/)) {
+      if (basename.match(/^action.*/)) {
         filePath = actionsPath + '/' + path.basename(path.dirname(file)) + '/' + basename;
         runs = yamlContents['runs'];
       } else {
@@ -38692,7 +38692,8 @@ async function run() {
       } else if (runs !== undefined) {
         for (const run in runs) {
           steps = runs[run]['steps'];
-          uses = runs[run]['steps']['uses'];
+          console.log(steps);
+          uses = runs[run]['uses'];
           let jobHasError = false;
           if (uses !== undefined) {
             jobHasError = runAssertions(uses, allowlist, isDryRun);
