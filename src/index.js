@@ -30,58 +30,67 @@ async function run() {
       const fileContents = fs.readFileSync(file, 'utf8');
       const yamlContents = yaml.parse(fileContents);
 
-      console.log("1");
       let fileHasError = false;
       let filePath;
-      let fileType;
       let steps;
       let jobs;
 
-      console.log("2");
       if (basename.match(/^action.*/)) {
-        const parentDirectoryName = path.basename(path.dirname(file));
-        filePath = actionsPath + '/' + parentDirectoryName + '/' + basename;
-        fileType = 'action';
-        steps = yamlContents['runs']['steps'];
+        filePath = actionsPath + '/' + path.basename(path.dirname(file)); + '/' + basename;
+        runs = yamlContents['runs'];
       } else {
         filePath = workflowsPath + '/' + basename;
-        fileType = 'workflow';
         jobs = yamlContents['jobs'];
       }
 
-      console.log("3");
-      if (jobs === undefined || steps === undefined) {
+      if (jobs === undefined && steps === undefined) {
         core.setFailed(`The "${filePath}" file does not contain any element on which to iterate.`);
       }
 
-      console.log("4");
       core.startGroup(filePath);
-
-      for (const job in jobs) {
-        if (fileType == 'workflow') {
+      if (jobs !== undefined) {
+        for (const job in jobs) {
           steps = jobs[job]['steps'];
           uses = jobs[job]['uses'];
-        }
-
-        console.log('Steps of file ', filePath, ' :', steps);
-
-        let jobHasError = false;
-
-        if (uses !== undefined) {
-          jobHasError = runAssertions(uses, allowlist, isDryRun);
-        } else if (steps !== undefined) {
-          for (const step of steps) {
-            if (!jobHasError) {
-              jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
+          let jobHasError = false;
+          if (uses !== undefined) {
+            jobHasError = runAssertions(uses, allowlist, isDryRun);
+          } else if (steps !== undefined) {
+            for (const step of steps) {
+              if (!jobHasError) {
+                jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
+              }
             }
+          } else {
+            core.warning(`The "${job}" job of the "${filePath}" file does not contain uses or steps.`);
           }
-        } else {
-          core.warning(`The "${job}" job of the "${filePath}" file does not contain uses or steps.`);
-        }
 
-        if (jobHasError) {
-          actionHasError = true;
-          fileHasError = true;
+          if (jobHasError) {
+            actionHasError = true;
+            fileHasError = true;
+          }
+        }
+      } else if (runs !== undefined) {
+        for (const run in runs) {
+          steps = runs[run]['steps'];
+          uses = runs[run]['uses'];
+          let jobHasError = false;
+          if (uses !== undefined) {
+            jobHasError = runAssertions(uses, allowlist, isDryRun);
+          } else if (steps !== undefined) {
+            for (const step of steps) {
+              if (!jobHasError) {
+                jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
+              }
+            }
+          } else {
+            core.warning(`The "${run}" run of the "${filePath}" file does not contain uses or steps.`);
+          }
+
+          if (jobHasError) {
+            actionHasError = true;
+            fileHasError = true;
+          }
         }
       }
 
