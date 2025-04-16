@@ -38666,8 +38666,9 @@ async function run() {
       if (jobs === undefined && steps === undefined) {
         if (hasMain !== undefined) {
           console.log(`The "${filePath}" directly runs a js script and therefore does not need to be scanned.`)
+        } else {
+          core.error(`The "${filePath}" file does not seem to be a proper .github file.`);
         }
-        core.error(`The "${filePath}" file does not seem to be a proper .github file.`);
       }
 
       core.startGroup(filePath);
