@@ -38654,7 +38654,7 @@ async function run() {
       let steps;
       let jobs;
 
-      if (basename.match(/^action.*/)) {
+      if (basename.match(/^action..*/)) {
         filePath = actionsPath + '/' + path.basename(path.dirname(file)) + '/' + basename;
         runs = yamlContents['runs'];
       } else {

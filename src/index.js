@@ -35,9 +35,9 @@ async function run() {
       let steps;
       let jobs;
 
-      if (basename.match(/^action.*/)) {
+      if (basename.match(/^action..*/)) {
         filePath = actionsPath + '/' + path.basename(path.dirname(file)) + '/' + basename;
-        runs = yamlContents['runs'];
+        steps = yamlContents.runs.steps;
       } else {
         filePath = workflowsPath + '/' + basename;
         jobs = yamlContents['jobs'];
@@ -71,27 +71,21 @@ async function run() {
           }
         }
       } else if (runs !== undefined) {
-        for (const run in runs) {
-          steps = runs[run]['steps'];
-          console.log(steps);
-          uses = runs[run]['uses'];
-          let jobHasError = false;
-          if (uses !== undefined) {
-            jobHasError = runAssertions(uses, allowlist, isDryRun);
-          } else if (steps !== undefined) {
-            for (const step of steps) {
-              if (!jobHasError) {
-                jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
-              }
+        console.log(steps);
+        let jobHasError = false;
+        if (steps !== undefined) {
+          for (const step of steps) {
+            if (!jobHasError) {
+              jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
             }
-          } else {
-            core.warning(`The "${run}" run of the "${filePath}" file does not contain uses or steps.`);
           }
+        } else {
+          core.warning(`The "${run}" run of the "${filePath}" file does not contain uses or steps.`);
+        }
 
-          if (jobHasError) {
-            actionHasError = true;
-            fileHasError = true;
-          }
+        if (jobHasError) {
+          actionHasError = true;
+          fileHasError = true;
         }
       }
 
