@@ -11,51 +11,87 @@ async function run() {
   try {
     const allowlist = core.getInput('allowlist');
     const isDryRun = core.getInput('dry_run') === 'true';
-    const workflowsPath = process.env['ZG_WORKFLOWS_PATH'] || '.github/workflows';
-    const globber = await glob.create([workflowsPath + '/*.yaml', workflowsPath + '/*.yml'].join('\n'));
+    const workflowsPath = '.github/workflows';
+    const actionsPath = '.github/actions';
+    const globber = await glob.create([
+      `${workflowsPath}/*.yaml`,
+      `${workflowsPath}/*.yml`,
+      `${actionsPath}/**/action.yaml`,
+      `${actionsPath}/**/action.yml`
+    ].join('\n'))
     let actionHasError = false;
+
+    const matchedFiles = await globber.glob();
+    console.log('Matched files:', matchedFiles);
 
     for await (const file of globber.globGenerator()) {
       const basename = path.basename(file);
       const fileContents = fs.readFileSync(file, 'utf8');
       const yamlContents = yaml.parse(fileContents);
-      const jobs = yamlContents['jobs'];
-      let fileHasError = false;
 
-      if (jobs === undefined) {
-        core.setFailed(`The "${basename}" workflow does not contain jobs.`);
+      let fileHasError = false;
+      let filePath;
+      let steps;
+      let jobs;
+
+      if (basename.match(/^action.y.*/)) {
+        filePath = actionsPath + '/' + path.basename(path.dirname(file)) + '/' + basename;
+        steps = yamlContents['runs']?.['steps'];
+        hasMain = yamlContents['runs']?.['main'];
+      } else {
+        filePath = workflowsPath + '/' + basename;
+        jobs = yamlContents['jobs'];
       }
 
-      core.startGroup(workflowsPath + '/' + basename);
-
-      for (const job in jobs) {
-        const uses = jobs[job]['uses'];
-        const steps = jobs[job]['steps'];
+      if (jobs === undefined && steps === undefined) {
+        if (hasMain !== undefined) {
+          console.log(`The "${filePath}" directly runs a js script and therefore does not need to be scanned.`)
+        } else {
+          core.error(`The "${filePath}" file does not seem to be a proper .github file.`);
+        }
+      } else {
+        core.startGroup(filePath);
         let jobHasError = false;
+        if (jobs !== undefined) {
+          for (const job in jobs) {
+            steps = jobs[job]['steps'];
+            uses = jobs[job]['uses'];
+            if (uses !== undefined) {
+              jobHasError = runAssertions(uses, allowlist, isDryRun);
+            } else if (steps !== undefined) {
+              for (const step of steps) {
+                if (!jobHasError) {
+                  jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
+                }
+              }
+            } else {
+              core.warning(`The "${job}" job of the "${filePath}" file does not contain uses or steps.`);
+            }
 
-        if (uses !== undefined) {
-          jobHasError = runAssertions(uses, allowlist, isDryRun);
+            if (jobHasError) {
+              actionHasError = true;
+              fileHasError = true;
+            }
+          }
         } else if (steps !== undefined) {
           for (const step of steps) {
             if (!jobHasError) {
               jobHasError = runAssertions(step['uses'], allowlist, isDryRun);
             }
           }
-        } else {
-          core.warning(`The "${job}" job of the "${basename}" workflow does not contain uses or steps.`);  
         }
 
         if (jobHasError) {
           actionHasError = true;
           fileHasError = true;
         }
-      }
 
-      if (!fileHasError) {
-        core.info('No issues were found.')
-      }
+        if (!fileHasError) {
+          core.info('No issues were found.')
+        }
 
-      core.endGroup();
+        core.endGroup();
+      }
     }
 
     if (!isDryRun && actionHasError) {

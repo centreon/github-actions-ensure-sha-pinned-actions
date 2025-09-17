@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zgosalvez/github-actions-ensure-sha-pinned-actions.git"
+    "url": "git+https://github.com/centreon/github-actions-ensure-sha-pinned-actions.git"
   },
   "keywords": [
     "actions",

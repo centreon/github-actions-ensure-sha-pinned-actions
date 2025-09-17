@@ -1,13 +1,22 @@
 version: 2
 updates:
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: github-actions
+    directory: '/'
     schedule:
-      interval: "monthly"
-      day: "saturday"
+      interval: monthly
+    open-pull-requests-limit: 10
+    labels:
+      - 'dependencies'
+      - 'gha'
 
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: npm
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "saturday"
+      interval: daily
+    open-pull-requests-limit: 0
+    labels:
+      - 'dependencies'
+      - 'javascript'
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "production"
