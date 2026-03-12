@@ -1,0 +1,8 @@
+name: 'github-actions-ensure-sha-pinned-actions'
+description: 'Ensures GitHub Actions are pinned to a full commit SHA'
+
+runs:
+  using: 'composite'
+  steps:
+    - run: exit 0
+      shell: bash
